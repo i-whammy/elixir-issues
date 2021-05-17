@@ -1,5 +1,6 @@
 defmodule Issues.CLI do
   @default_count 4
+  @headers ["number", "created_at", "title"]
 
   def run(argv) do
     argv
@@ -33,10 +34,15 @@ defmodule Issues.CLI do
     System.halt(0)
   end
 
-  def process({user,project,_}) do
+  def process({user,project, count}) do
     Issues.GithubIssues.fetch(user, project)
     |> decode_response
     |> convert_to_list_of_maps
+    |> sort_into_ascending_order
+    |> Enum.take(count)
+    |> Enum.map(fn a -> Map.take(a, @headers) end)
+    |> Enum.map(fn a -> Map.values(a) end)
+    |> IO.inspect
   end
 
   def decode_response({:ok, body}), do: body
@@ -50,5 +56,9 @@ defmodule Issues.CLI do
   def convert_to_list_of_maps(list) do
     list
     |> Enum.map(&Enum.into(&1, Map.new))
+  end
+
+  def sort_into_ascending_order(list_of_issues) do
+    Enum.sort(list_of_issues, fn a, b -> a["created_at"] <= b["created_at"] end)
   end
 end
