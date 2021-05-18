@@ -2,6 +2,8 @@ defmodule Issues.CLI do
   @default_count 4
   @headers ["number", "created_at", "title"]
 
+  import Issues.TableFormatter, only: [ print_table_for_columns: 2 ]
+
   def run(argv) do
     argv
     |> parse_args
@@ -40,9 +42,9 @@ defmodule Issues.CLI do
     |> convert_to_list_of_maps
     |> sort_into_ascending_order
     |> Enum.take(count)
-    |> Enum.map(fn a -> Map.take(a, @headers) end)
-    |> Enum.map(fn a -> Map.values(a) end)
-    |> IO.inspect
+    # |> Enum.map(fn a -> Map.take(a, @headers) end)
+    # |> Enum.map(fn a -> Map.values(a) end)
+    |> print_table_for_columns(@headers)
   end
 
   def decode_response({:ok, body}), do: body
