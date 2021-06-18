@@ -1,6 +1,6 @@
 # Issues
 
-**TODO: Add description**
+CLI Application fetching issues from github
 
 ## Installation
 
